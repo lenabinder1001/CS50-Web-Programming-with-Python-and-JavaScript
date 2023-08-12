@@ -1,0 +1,7 @@
+textarea {
+    min-height: 400px;
+}
+
+.mail {
+    border: 1px solid black;
+}
