@@ -1,0 +1,19 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>{{ category.title }}</h2>
+
+    {% for listing in listings %}
+        {% if listing.active %}
+            <div style="display: flex;">
+                <img src="{{ listing.image }}" alt="image" height="250px" width="250px">
+                <div style="padding-top: 60px; margin-left: 30px;">
+                    <h4><a href="{% url 'listing' listing.id %}">{{ listing.title }}</a></h4>
+                    <b>Price: </b><p>$ {{ listing.firstBid }}</p>
+                    <p>{{ listing.description }}</p>
+                </div>
+            </div>
+        {% endif %}
+    {% endfor %}
+
+{% endblock %}

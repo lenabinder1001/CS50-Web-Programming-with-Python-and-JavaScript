@@ -1,0 +1,21 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>Watchlist</h2>
+
+    {% if watchlist %}
+        {% for listing in watchlist.listings.all %}
+            <div style="display: flex;">
+                <img src="{{ listing.image }}" alt="image" height="250px" width="250px">
+                <div style="padding-top: 60px; margin-left: 30px;">
+                    <h4><a href="{% url 'listing' listing.id %}">{{ listing.title }}</a></h4>
+                    <b>Price: </b><p>$ {{ listing.firstBid }}</p>
+                    <p>{{ listing.description }}</p>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>You don't have listings on your watchlist!</p>
+    {% endif %}
+
+{% endblock %}
