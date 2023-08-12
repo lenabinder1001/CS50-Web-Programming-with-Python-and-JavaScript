@@ -1,0 +1,117 @@
+{% extends "network/layout.html" %}
+{% load static %}
+
+{% block body %}
+    <h2 style="margin-left:15px; margin-top:15px">{{ user_data.username }}</h2>
+
+    <p style="margin-left:15px; margin-top:10px; margin-bottom: 5px;"><b>Followers:</b> {{ user_data.followers.count }}</p>
+    <p style="margin-left:15px; margin-top:5px"><b>Following:</b> {{ user_data.following.count }}</p>
+
+    {% if user.is_authenticated and user_data.id != user.id %}
+        <div style="margin-left:15px;">
+            {% if user in followers %}
+                <form action="{% url 'follow-unfollow' user_data.id %}" method="post">
+                    {% csrf_token %}
+                    <input type="submit" value="Unfollow"/>
+                </form>
+            {% else %}
+                <form action="{% url 'follow-unfollow' user_data.id %}" method="post">
+                    {% csrf_token %}
+                    <input type="submit" value="Follow"/>
+                </form>
+            {% endif %}
+        </div>
+    {% endif %}
+
+    {% for post in page_posts %}
+        <div style="border: 1px solid lightgrey; padding-left:15px; padding-top:15px; margin: 20px; border-radius: 10px; height: 165px;" id="{{post.id}}">
+            <p class="text">{{ post.text }}</p>
+            <p style="color:grey; margin-bottom: 10px;">{{ post.timestamp }}</p>
+            <div style="display: flex; margin: 0px; height: 20px;">
+                <p><b>Likes: </b></p><p class="likes" style="margin: 0px;">{{ post.likes.count }}</p>
+            </div>
+            {% if post.user == user %}
+                <button class="btn btn-sm btn-outline-primary mt-2" onclick="editHandler('{{post.id}}')">Edit</button>
+            {% endif %}
+            {% if post.user != user %}
+                {% if post in liked_posts %}
+                    <button class="btn btn-sm btn-outline-success mt-2" onclick="unlikeHandler('{{post.id}}')">Unlike</button>
+                {% else %}
+                    <button class="btn btn-sm btn-outline-success mt-2" onclick="likeHandler('{{post.id}}')">Like</button>
+                {% endif %}
+            {% endif %}
+        </div>
+    {% endfor %}
+
+    <nav aria-label="Page navigation example">
+        <ul class="pagination d-flex justify-content-center">
+        {% if page_posts.has_previous %}
+          <li class="page-item"><a class="page-link" href="?page={{page_posts.previous_page_number}}">Previous</a></li>
+        {% endif %}
+        {% if page_posts.has_next %}
+          <li class="page-item"><a class="page-link" href="?page={{page_posts.next_page_number}}">Next</a></li>
+        {% endif %}
+        </ul>
+    </nav>
+
+{% endblock %}
+
+{% block script %}
+    <script>
+        
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length == 2) return parts.pop().split(';').shift();
+        }
+
+        function unlikeHandler(post_id) {
+            var target_div = document.getElementById(`${post_id}`).getElementsByClassName("likes")[0];
+            var target_btn = document.getElementById(`${post_id}`).getElementsByClassName("btn")[0];
+            target_btn.innerHTML = 'Like'
+            likes = target_div.innerHTML
+            new_likes = parseInt(likes) - 1
+            target_div.innerHTML = new_likes
+            fetch(`/${post_id}/unlike`)
+            .then(response => response.json)
+            .then(result => {console.log(result)})
+        };
+
+        function likeHandler(post_id) {
+            var target_div = document.getElementById(`${post_id}`).getElementsByClassName("likes")[0];
+            var target_btn = document.getElementById(`${post_id}`).getElementsByClassName("btn")[0];
+            target_btn.innerHTML = 'Unlike'
+            likes = target_div.innerHTML
+            new_likes = parseInt(likes) + 1
+            target_div.innerHTML = new_likes
+            fetch(`/${post_id}/like`)
+            .then(response => response.json)
+            .then(result => {console.log(result)})
+        };
+
+        function editHandler(post_id) {
+            var container_div = document.getElementById(`${post_id}`).style.height = "240px"
+            var target_div = document.getElementById(`${post_id}`).getElementsByClassName("text")[0];
+            text = target_div.innerHTML
+            target_div.innerHTML = 
+                `<textarea style="width: 100%;">${text}</textarea><br>
+                <button class="btn btn-sm btn-outline-success mt-2" onclick="editSaveHandler('${post_id}')">Save</button>`
+        };
+
+        function editSaveHandler(post_id) {
+            post_id = parseInt(post_id)
+            var target_div = document.getElementById(`${post_id}`).getElementsByClassName("text")[0];
+            var target_textarea = target_div.getElementsByTagName("textarea")[0]
+            text = target_textarea.value
+            var container_div = document.getElementById(`${post_id}`).style.height = "165px"
+            target_div.innerHTML = `<p class="text">${text}</p>`
+            fetch(`/${post_id}/edit`, {
+                method: 'PUT',
+                headers: {"Content-type": "application/json", "X-CSRFToken": getCookie("csrftoken")},
+                body: JSON.stringify({
+                    text: text
+            })
+          })
+        };
+    </script>
+{% endblock %}
