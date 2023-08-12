@@ -1,0 +1,111 @@
+{% extends "bookshelf/layout.html" %}
+{% load static %}
+
+{% block body %}
+
+<h1 style="color: white; padding: 15px;">{{ book.title }}</h1>
+
+<div class='row justify-content-md-center align-items-center pt-1'>
+    <div class="bg-white rounded shadow-sm p-3" style="display: flex; flex-wrap: wrap; margin: auto; width: 70%; margin-bottom: 20px;"> 
+        <div style="max-width:300px; margin-left: 20px;">
+            <img src="{{ book.image }}" alt="image" style="margin: auto; width: 90%;">
+            {% if book.read == False %}
+                <form action="{% url 'read_unread' book.id %}" method="post">
+                    {% csrf_token %}
+                    <input class="btn btn-sm btn-secondary mt-2" type="submit" value="Not Read" style="width: 90%;"/>
+                </form>
+            {% else %}
+                <form action="{% url 'read_unread' book.id %}" method="post">
+                    {% csrf_token %}
+                    <input class="btn btn-sm btn-success mt-2" type="submit" value="Read" style="width: 90%;"/>
+                </form>
+            {% endif %}
+            <div style="display: flex; margin-top: 5px; width: 90%; height: 30px">
+                {% if book.list.name == 'Wishlist' %}
+                    <button class="btn btn-sm btn-primary" style="width: 143px"><a style="color: white" href="{% url 'bookshelf_wishlist' book.id %}">Add to Bookshelf</a></button>
+                {% else %}
+                    <button class="btn btn-sm btn-primary" style="width: 143px"><a style="color: white" href="{% url 'bookshelf_wishlist' book.id %}">Add to Wishlist</a></button>
+                {% endif %}
+            <button class="btn btn-sm btn-danger" style="margin-left: 5px; width: 120px"><a style="color: white;" href="{% url 'delete' book.id %}">Delete</a></button>
+            </div>
+        </div>
+
+        <div style="margin-left: 0px; margin-right: 0px; margin-top: 20px; max-width: 750px">
+            <p><b>Title: </b><span id="span_title">{{ book.title }}</span></p>
+            <p><b>Author: </b><span id="span_author">{{ book.author }}</span></p>
+            <p><b>Pages: </b><span id="span_pages">{{ book.pages }}</span></p>
+            <p><b>Rating: </b><span id="span_rating">{{ book.rating }}</span>/5</p>
+            <p><b>Content: </b><br><span id="span_content">{{ book.content }}</span></p>
+            <button class="btn btn-sm btn-outline-primary" id="edit" onclick="editHandler()">Edit</button>
+            <button class="btn btn-sm btn-outline-success" id="save" onclick="editSaveHandler('{{book.id}}')" style="visibility: hidden;">Save</button><br>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+    <script>
+
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length == 2) return parts.pop().split(';').shift();
+        };
+
+        function editHandler() {
+            var title = document.getElementById("span_title").innerHTML
+            var author = document.getElementById("span_author").innerHTML
+            var pages = document.getElementById("span_pages").innerHTML
+            var content = document.getElementById("span_content").innerHTML
+            var rating = document.getElementById("span_rating").innerHTML
+            document.getElementById("edit").style.display = "none"
+            document.getElementById("save").style.visibility = "visible"
+            document.getElementById("span_title").innerHTML = `<input type="text" name="title" id="title" value="${title}""><br>`
+            document.getElementById("span_author").innerHTML = `<input type="text" name="author" id="author" value="${author}"><br>`
+            document.getElementById("span_pages").innerHTML = `<input type="text" name="pages" id="pages" value="${pages}"><br>`
+            document.getElementById("span_content").innerHTML = `<textarea id="content" style="width: 300px; height: 100px">${content}</textarea><br>`
+            document.getElementById("span_rating").innerHTML = `<input type="text" name="rating" id="rating" value="${rating}">`
+        };
+
+        function editSaveHandler(book_id) {
+            // Get values
+            var title = document.getElementById("title").value
+            var author = document.getElementById("author").value
+            var pages = document.getElementById("pages").value
+            var content = document.getElementById("content").value
+            var rating = document.getElementById("rating").value
+
+            // Change visibility of buttons
+            document.getElementById("edit").style.display = "block"
+            document.getElementById("save").style.visibility = "hidden"
+
+            // Get span elements and set innerHtml to new values
+            document.getElementById("span_title").innerHTML = title
+            document.getElementById("span_author").innerHTML = author
+            document.getElementById("span_pages").innerHTML = pages
+            document.getElementById("span_content").innerHTML = content
+            document.getElementById("span_rating").innerHTML = rating
+
+            // Put new values
+            fetch(`edit/${book_id}`, {
+                method: 'PUT',
+                headers: {"Content-type": "application/json", "X-CSRFToken": getCookie("csrftoken")},
+                body: JSON.stringify({
+                    title: title,
+                    author: author,
+                    pages: pages,
+                    content: content,
+                    rating: rating
+                })
+            })
+        };
+
+        function deleteHandler(book_id, list_id) {
+            // Delete book
+            fetch(`delete/${book_id}`, {
+                method: 'PUT',
+                headers: {"Content-type": "application/json", "X-CSRFToken": getCookie("csrftoken")},
+            })
+        };
+    </script>
+{% endblock %}

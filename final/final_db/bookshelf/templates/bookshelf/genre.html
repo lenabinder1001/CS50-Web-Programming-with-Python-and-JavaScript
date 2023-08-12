@@ -1,0 +1,27 @@
+{% extends "bookshelf/layout.html" %}
+{% load static %}
+
+{% block body %}
+
+<h1 style="color: white; padding: 15px;">{{ genre.name }}</h1>
+    <div class="d-flex flex-wrap justify-content-around">
+        {% for book in page_books %}
+            <div style="width: 150px; margin-right: 100px; margin-left: 100px; margin-top: 20px; margin-bottom: 20px;"">
+                <img src="{{ book.image }}" alt="image" width="150px">
+                <button style="background-color: #d4a0a5; margin-top: 5px; width: 150px; border: 1px solid #c08389; border-radius: 10px;"><a style="color: #ffffff;" href="{% url 'book' book.id %}">View Book</a></button>
+            </div>
+        {% endfor %}
+    </div>
+
+    <nav aria-label="Page navigation example">
+        <ul class="pagination d-flex justify-content-center">
+        {% if page_books.has_previous %}
+          <li class="page-item"><a class="page-link" href="?page={{page_books.previous_page_number}}">Previous</a></li>
+        {% endif %}
+        {% if page_books.has_next %}
+          <li class="page-item"><a class="page-link" href="?page={{page_books.next_page_number}}">Next</a></li>
+        {% endif %}
+        </ul>
+    </nav>
+
+{% endblock %}

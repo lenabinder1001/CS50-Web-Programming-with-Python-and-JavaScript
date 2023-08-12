@@ -1,0 +1,36 @@
+{% extends "bookshelf/layout.html" %}
+{% load static %}
+
+{% block body %}
+
+    <h1 style="color: white; padding: 15px;">Search</h1>
+
+    <div class='row justify-content-md-center align-items-center pt-1'>
+        <div class="bg-white rounded shadow-sm p-3" style="justify-content: center; align-items: center; margin: auto; width: 80%;"> 
+            <form action="" method="post" name="myform">
+                <div class="form-group">
+                    {% csrf_token %}
+                    <label>Author:</label><br>
+                    <input style="min-width: 90%; margin-bottom: 15px;" type="text" name="search_author"><br>
+                    <label>Title:</label><br>
+                    <input style="min-width: 90%" type="text" name="search_title"><br>
+                </div>
+                <div class="input-group">
+                    <input class="btn" type="submit" name="create" value="Search" style="background-color: #d4a0a5; margin-top: 5px; width: 150px; border: 1px solid #c08389; border-radius: 10px; color: white;">
+                </div>
+            </form>
+        </div>
+    </div>
+
+        {% if books %}
+        <div class="d-flex flex-wrap justify-content-around mt-5 mb-0" style="min-height: 70vh">
+            {% for book in books %}
+                <div style="width: 150px;">
+                    <img src="{{ book.image }}" alt="image" width="150px" height="230px;">
+                    <button style="background-color: #d4a0a5; margin-top: 5px; width: 150px; border: 1px solid #c08389; border-radius: 10px;"><a style="color: #ffffff;" href="{% url 'book' book.id %}">View Book</a></button>
+                </div>
+            {% endfor %}
+        </div>
+        {%endif%}
+
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends "bookshelf/layout.html" %}
+{% load static %}
+
+{% block body %}
+
+    <div class='row justify-content-md-center align-items-center pt-5'>
+        <div class="bg-white rounded shadow-sm p-3" style="justify-content: center; align-items: center; margin: auto; width: 80%;"> 
+            <div class="d-flex flex-wrap justify-content-around">
+                {% for list in lists %}
+                    <div style="width: 150px; margin-top: 20px; margin-bottom: 20px;">
+                        {% if list.name == 'Bookshelf' %}
+                            <svg xmlns="http://www.w3.org/2000/svg" width="150" height="150" fill="#d4a0a5" class="bi bi-bookshelf" viewBox="0 0 16 16" style="border: 1px solid lightgrey; border-radius: 10px; padding: 10px">
+                                <path d="M2.5 0a.5.5 0 0 1 .5.5V2h10V.5a.5.5 0 0 1 1 0v15a.5.5 0 0 1-1 0V15H3v.5a.5.5 0 0 1-1 0V.5a.5.5 0 0 1 .5-.5zM3 14h10v-3H3v3zm0-4h10V7H3v3zm0-4h10V3H3v3z"/>
+                            </svg>
+                            <button style="background-color: #d4a0a5; margin-top: 5px; width: 150px; border: 1px solid #c08389; border-radius: 10px;"><a href="{% url 'list' list.id%}" style="color: #ffffff;">Bookshelf</a></button>
+                        {% else %}
+                            <svg xmlns="http://www.w3.org/2000/svg" width="150" height="150" fill="#d4a0a5" class="bi bi-list-ul" viewBox="0 0 16 16" style="border: 1px solid lightgrey; border-radius: 10px; padding: 10px">
+                                <path fill-rule="evenodd" d="M5 11.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zm-3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm0 4a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm0 4a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
+                            </svg>
+                            <button style="background-color: #d4a0a5; margin-top: 5px; width: 150px; border: 1px solid #c08389; border-radius: 10px;"><a href="{% url 'list' list.id%}" style="color: #ffffff;">Wishlist</a></button>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+                <div style="width: 150px; margin-top: 20px; margin-bottom: 20px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="150" height="150" fill="#d4a0a5" class="bi bi-search-heart" viewBox="0 0 16 16" style="border: 1px solid lightgrey; border-radius: 10px; padding: 10px">
+                        <path d="M6.5 4.482c1.664-1.673 5.825 1.254 0 5.018-5.825-3.764-1.664-6.69 0-5.018Z"/>
+                        <path d="M13 6.5a6.471 6.471 0 0 1-1.258 3.844c.04.03.078.062.115.098l3.85 3.85a1 1 0 0 1-1.414 1.415l-3.85-3.85a1.007 1.007 0 0 1-.1-.115h.002A6.5 6.5 0 1 1 13 6.5ZM6.5 12a5.5 5.5 0 1 0 0-11 5.5 5.5 0 0 0 0 11Z"/>
+                    </svg>
+                    <button style="background-color: #d4a0a5; margin-top: 5px; width: 150px; border: 1px solid #c08389; border-radius: 10px;"><a href="{% url 'search' %}" style="color: #ffffff;">Search</a></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+

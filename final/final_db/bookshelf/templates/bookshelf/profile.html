@@ -1,0 +1,87 @@
+{% extends "bookshelf/layout.html" %}
+{% load static %}
+
+{% block body %}
+
+<h1 style="color: white; padding: 15px;">Profile</h1>
+
+<div class='row justify-content-md-center align-items-center pt-1'>
+    <div class="bg-white rounded shadow-sm p-3" style="justify-content: center; align-items: center; margin: auto; width: 80%; margin-bottom: 20px;"> 
+        <p><b>Books read: </b>{{ books_read }} of <span id="span_goal_books">{{ goal.books }}</span></p>
+        <div class="progress" role="progressbar" aria-label="Animated striped example" aria-valuenow="{{ books_read }}" aria-valuemin="0" aria-valuemax="{{ goal.books }}">
+            <div class="progress-bar progress-bar-striped progress-bar-animated" style="width:{{ books_percent }}%"></div>
+        </div>
+        
+        <p style="margin-top: 20px;"><b>Pages read: </b>{{ pages }} of <span id="span_goal_pages">{{ goal.pages }}</span></p>
+        <div class="progress" role="progressbar" aria-label="Animated striped example" aria-valuenow="{{ pages_percent }}" aria-valuemin="0" aria-valuemax="{{ goal.pages }}">
+            <div class="progress-bar progress-bar-striped progress-bar-animated" style="width:{{ pages_percent }}%"></div>
+        </div>
+
+        <button class="btn btn-sm btn-outline-primary mt-2" id="edit" onclick="editHandler()">Edit</button>
+        <button class="btn btn-sm btn-outline-success mt-2" id="save" onclick="editSaveHandler()" style="visibility: hidden;">Save</button><br>
+
+        <table class="table table-striped" style="margin-top: 20px;">
+            <thead>
+            <tr>
+                <th scope="col">Genre</th>
+                <th scope="col">Books read</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for genre in genres %}
+                <tr>
+                    <td>{{ genre.Genre }}</td>
+                    <td>{{ genre.book_count }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block script %}
+    <script>
+
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length == 2) return parts.pop().split(';').shift();
+        };
+
+        function editHandler() {
+            var books = document.getElementById("span_goal_books").innerHTML
+            var pages = document.getElementById("span_goal_pages").innerHTML
+            document.getElementById("edit").style.display = "none"
+            document.getElementById("save").style.visibility = "visible"
+            document.getElementById("span_goal_books").innerHTML = `<input type="text" name="books" id="books" value="${books}""><br>`
+            document.getElementById("span_goal_pages").innerHTML = `<input type="text" name="pages" id="pages" value="${pages}"><br>`
+        };
+
+        function editSaveHandler() {
+            // Get values
+            var books = document.getElementById("books").value
+            var pages = document.getElementById("pages").value
+
+            // Change visibility of buttons
+            document.getElementById("edit").style.display = "block"
+            document.getElementById("save").style.visibility = "hidden"
+
+            // Get span elements and set innerHtml to new values
+            document.getElementById("span_goal_books").innerHTML = books
+            document.getElementById("span_goal_pages").innerHTML = pages
+
+            // Put new values
+            fetch(`goals`, {
+                method: 'PUT',
+                headers: {"Content-type": "application/json", "X-CSRFToken": getCookie("csrftoken")},
+                body: JSON.stringify({
+                    books: books,
+                    pages: pages,
+                })
+            })
+            location.reload();
+        };
+    </script>
+{% endblock %}

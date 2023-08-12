@@ -1,0 +1,75 @@
+{% extends "bookshelf/layout.html" %}
+{% load static %}
+
+{% block body %}
+
+<h1 style="color: white; padding: 15px;">Add new Book</h1>
+
+<div class='row justify-content-md-center align-items-center pt-1'>
+  <div class="bg-white rounded shadow-sm p-3" style="justify-content: center; align-items: center; margin: auto; width: 80%;"> 
+    <form action="{% url 'create' %}" method="post">
+        {% csrf_token %}
+        <div class="d-flex" style="margin-bottom: 15px; flex-wrap: wrap;">
+        <div style="flex: 1">
+          <label for="title">Title:</label><br>
+          <input style="min-width: 90%" type="text" name="title" {% if 'title' in data %} value="{{ data.title }}"{% endif %} required>
+        </div>
+        <div style="flex: 1">
+          <label for="content">Description:</label><br>
+          <input style="min-width: 90%" type="text" name="description" {% if 'description' in data %} value="{{ data.description.value }}"{% endif %} required>
+        </div>
+        </div>
+        <div class="d-flex" style="margin-bottom: 15px; flex-wrap: wrap;">
+        <div style="flex: 1">
+          <label for="author">Author:</label><br>
+          <input style="min-width: 90%" type="text" name="author" {% if 'author' in data %} value="{{ data.author }}" {% endif %} required>
+        </div>
+        <div style="flex: 1">
+          <label for="rating">Rating:</label><br>
+          <input style="min-width: 90%" type="number" name="rating">
+        </div>
+        </div>
+        <div class="d-flex" style="margin-bottom: 15px; flex-wrap: wrap;">
+        <div style="flex: 1">
+          <label for="pages">Pages:</label><br>
+          <input style="min-width: 90%" type="number" name="pages" {% if 'pages' in data %} value="{{ data.pages }}" {% endif %} required>
+        </div>
+        <div style="flex: 1">
+          <label for="content">Image URL:</label><br>
+          <input style="min-width: 90%" type="text" name="image" required>
+        </div>
+        </div>
+        <div class="d-flex" style="margin-bottom: 15px; flex-wrap: wrap;">
+        <div style="flex: 1">
+        <label for="genre">Genre:</label><br>
+          <select style="min-width: 90%" name="genre">
+              <option disabled selected value> -- select an option -- </option>
+              {% for genre in genres %}
+                <option value="{{ genre.id }}">{{ genre.name }}</option>
+              {% endfor %}
+          </select>
+        </div>
+        <div style="flex: 1">
+          <label for="genre">Place:</label><br>
+          <select style="min-width: 90%" name="list">
+              <option disabled selected value> -- select an option -- </option>
+              {% for list in lists %}
+                <option value="{{ list.id }}">{{ list.name }}</option>
+              {% endfor %}
+          </select><br><br>
+        </div>
+        </div>
+        <input type="submit" name="create" value="Add Book" style="background-color: #d4a0a5; margin-top: 5px; width: 150px; border: 1px solid #c08389; border-radius: 10px; color: white;">
+    </form>
+
+    <p style="margin-top:20px">With this search you cam search for available book data via an isbn. If the requested data is available the corresponding fields of the form will be filled automatically.</p>
+    
+    <form action="{% url 'create' %}" method="post">
+      <input type="text" name="isbn" id="isbn">
+      {% csrf_token %}
+      <input type="submit" name="isbnsearch" id="isbnsearch" value="Search for book data">
+    </form>
+  </div>
+</div>
+
+{% endblock %}

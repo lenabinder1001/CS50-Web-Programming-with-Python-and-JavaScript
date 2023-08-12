@@ -1,0 +1,12 @@
+{% extends "bookshelf/layout.html" %}
+{% load static %}
+
+{% block body %}
+
+    <h1 style="color: white; padding: 15px;">Books by Genres</h1>
+
+    {% for genre in genres %}
+        <a style="color: white; margin-left: 20px;" href="{% url 'genre' genre.id %}">{{ genre.name }}</a><br>
+    {% endfor %}
+
+{% endblock %}
